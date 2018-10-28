@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Elasticsearch.net" Version="6.4.0" />
+    <PackageReference Include="Nest" Version="6.4.0" />
   </ItemGroup>
 
 </Project>
