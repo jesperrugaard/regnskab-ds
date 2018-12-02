@@ -28,10 +28,10 @@ namespace RegnskabsHenter
             { "name_of_run", "Koersel"},
             { "threads","4" },
             { "chunks","10" },
-            { "page_size","100" },
+            { "page_size","2000" },
             { "base_uri","http://distribution.virk.dk" },
-            { "start_dato","01-01-2018" },
-            { "slut_dato","02-01-2018" },
+            { "start_date","01-01-2018" },
+            { "end_date","02-01-2018" },
             { "use_yesterday", "true"}
         };
 
@@ -53,7 +53,7 @@ namespace RegnskabsHenter
                 foreach (var arg in args)
                 {
                     var key = arg.Remove(arg.IndexOf('='));
-                    var value = arg.Substring(arg.IndexOf('='));
+                    var value = arg.Substring(arg.IndexOf('=')+1);
                     if (confValues.ContainsKey(key))
                     {
                         tempDict[key] = value;
@@ -67,15 +67,13 @@ namespace RegnskabsHenter
                 confValues[key] = tempDict[key];
             }
 
-            //Add all values to confValues.
-            System.Console.WriteLine(tempDict.ToString());
-
-
+           
             RegnskabsUri = new Uri(confValues["base_uri"]);
             ErstDistUri = new Uri(Offentliggoerelse);
             Threads = int.Parse( confValues["threads"]);
             PageSize = int.Parse(confValues["page_size"]);
             UseYesterDay = bool.Parse(confValues["use_yesterday"]);
+            Chunks = int.Parse(confValues["chunks"]);
 
 
             if(UseYesterDay)
@@ -84,11 +82,11 @@ namespace RegnskabsHenter
                 StartDato =SlutDato.AddDays(-1);
 
             } else {
-                SlutDato = DateTime.Parse(confValues["slut_dato"]);
-                StartDato =  DateTime.Parse(confValues["start_dato"]);
+                SlutDato = DateTime.Parse(confValues["end_date"]);
+                StartDato =  DateTime.Parse(confValues["start_date"]);
                 if(!(SlutDato.CompareTo(StartDato) >= 0)) 
                 {
-                    throw new ArgumentOutOfRangeException("Startdato skal ligge før slutdato");
+                    throw new ArgumentOutOfRangeException("Start date must be before end date");
                 }
 
             }
@@ -105,7 +103,7 @@ namespace RegnskabsHenter
 
         public void WriteUsage()
         {
-            System.Console.WriteLine("Programmet kan ikke startes, der er problemer med konfigurationen. Følgende værdier kan angives:");
+            System.Console.WriteLine("Application cannot start. Please configuration values");
             foreach (var confValue in confValues)
             {
                 System.Console.WriteLine(confValue.Key + " = " + confValue.Value);
