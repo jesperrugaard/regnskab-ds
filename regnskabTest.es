@@ -6,8 +6,8 @@ GET /offentliggoerelser/_search
                 {
                     "range": {
                         "indlaesningsTidspunkt": {
-                            "gte": "2018-09-1T00:00:00.000Z",
-                            "lte": "2018-09-24T23:59:59.999Z"
+                            "gte": "2018-11-24T00:00:00.000Z",
+                            "lte": "2018-11-25T23:59:59.999Z"
                         }
                     }
                 }

@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="9.2.3" />
     <PackageReference Include="Elasticsearch.net" Version="6.4.0" />
+    <PackageReference Include="Log4Net" Version="2.0.8" />
     <PackageReference Include="Nest" Version="6.4.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
   </ItemGroup>

@@ -75,10 +75,12 @@ namespace RegnskabsHenter
             ErstDistUri = new Uri(Offentliggoerelse);
             Threads = int.Parse( confValues["threads"]);
             PageSize = int.Parse(confValues["page_size"]);
+            UseYesterDay = bool.Parse(confValues["use_yesterday"]);
+
 
             if(UseYesterDay)
             {
-                SlutDato = DateTime.Now;
+                SlutDato = DateTime.Now.Date;
                 StartDato =SlutDato.AddDays(-1);
 
             } else {
@@ -86,7 +88,7 @@ namespace RegnskabsHenter
                 StartDato =  DateTime.Parse(confValues["start_dato"]);
                 if(!(SlutDato.CompareTo(StartDato) >= 0)) 
                 {
-                    throw new ArgumentOutOfRangeException("Start dato skal ligge før slutdato");
+                    throw new ArgumentOutOfRangeException("Startdato skal ligge før slutdato");
                 }
 
             }

@@ -1,0 +1,51 @@
+2018-11-25 20:42:19,605 [1] INFO  RegnskabsHenter.Program Regnskabsindlæsning startet.
+2018-11-25 20:42:19,621 [1] INFO  RegnskabsHenter.Program Config indlæst.
+2018-11-25 20:42:19,802 [1] INFO  RegnskabsHenter.Program Config indlæst.
+2018-11-25 20:42:19,803 [1] INFO  RegnskabsHenter.Program Dannet temp-katalog: C:\Users\yazpa\OneDrive\Dokumenter\dotnet_projects\regnskab-ds\Regnskabskoersel-25-11-2018--f7519b68-c4ee-4621-9ca8-a6d2b96c729a
+2018-11-25 20:42:20,933 [1] INFO  RegnskabsHenter.Program Indlæst fra ES: 62, for datoer: 24-11-2018 00:00:00/25-11-2018 00:00:00
+2018-11-25 20:42:22,585 [1] INFO  RegnskabsHenter.Program 33591144 har ingen xbrl-fil tilknyttet
+2018-11-25 20:42:24,376 [1] INFO  RegnskabsHenter.Program 32781985 har ingen xbrl-fil tilknyttet
+2018-11-25 20:42:24,477 [1] INFO  RegnskabsHenter.Program 33592604 har ingen xbrl-fil tilknyttet
+2018-11-25 20:42:29,139 [1] INFO  RegnskabsHenter.Program 33592639 har ingen xbrl-fil tilknyttet
+2018-11-25 20:45:31,007 [1] INFO  RegnskabsHenter.Program Regnskabsindlæsning startet.
+2018-11-25 20:45:31,028 [1] INFO  RegnskabsHenter.Program Config indlæst.
+2018-11-25 20:45:31,297 [1] INFO  RegnskabsHenter.Program Config indlæst.
+2018-11-25 20:45:31,299 [1] INFO  RegnskabsHenter.Program Dannet temp-katalog: C:\Users\yazpa\OneDrive\Dokumenter\dotnet_projects\regnskab-ds\Regnskabskoersel-25-11-2018--ba2fb44e-ce6d-4d9c-afb9-4ffc52917a6e
+2018-11-25 20:45:32,708 [1] INFO  RegnskabsHenter.Program Indlæst fra ES: 62, for datoer: 24-11-2018 00:00:00/25-11-2018 00:00:00
+2018-11-25 20:45:33,816 [1] INFO  RegnskabsHenter.Program 33591144/X18-DQ-66-LQ-33591144 har ingen xbrl-fil tilknyttet
+2018-11-25 20:45:35,611 [1] INFO  RegnskabsHenter.Program 32781985/X18-DQ-66-UX-32781985 har ingen xbrl-fil tilknyttet
+2018-11-25 20:45:35,699 [1] INFO  RegnskabsHenter.Program 33592604/X18-DQ-66-LV-33592604 har ingen xbrl-fil tilknyttet
+2018-11-25 20:45:38,573 [1] INFO  RegnskabsHenter.Program 33592639/X18-DQ-66-KN-33592639 har ingen xbrl-fil tilknyttet
+2018-11-25 20:50:02,587 [1] INFO  RegnskabsHenter.Program Regnskabsindlæsning startet.
+2018-11-25 20:50:02,600 [1] INFO  RegnskabsHenter.Program Config indlæst.
+2018-11-25 20:50:02,789 [1] INFO  RegnskabsHenter.Program Config indlæst.
+2018-11-25 20:50:02,792 [1] INFO  RegnskabsHenter.Program Dannet temp-katalog: C:\Users\yazpa\OneDrive\Dokumenter\dotnet_projects\regnskab-ds\Regnskabskoersel-25-11-2018--a4267128-1f1b-429a-afb9-b94140f86425
+2018-11-25 20:50:03,926 [1] INFO  RegnskabsHenter.Program Indlæst fra ES: 62, for datoer: 24-11-2018 00:00:00/25-11-2018 00:00:00
+2018-11-25 20:50:05,028 [1] INFO  RegnskabsHenter.Program 33591144/X18-DQ-66-LQ-33591144 har ingen xbrl-fil tilknyttet
+2018-11-25 20:50:06,527 [1] INFO  RegnskabsHenter.Program 32781985/X18-DQ-66-UX-32781985 har ingen xbrl-fil tilknyttet
+2018-11-25 20:50:06,624 [1] INFO  RegnskabsHenter.Program 33592604/X18-DQ-66-LV-33592604 har ingen xbrl-fil tilknyttet
+2018-11-25 20:50:10,673 [1] INFO  RegnskabsHenter.Program 33592639/X18-DQ-66-KN-33592639 har ingen xbrl-fil tilknyttet
+2018-11-25 20:50:14,036 [1] INFO  RegnskabsHenter.Program Har indlæst 62regnskaber
+2018-11-25 20:50:14,039 [1] INFO  RegnskabsHenter.Program Zipper: C:\Users\yazpa\OneDrive\Dokumenter\dotnet_projects\regnskab-ds\Regnskabskoersel-25-11-2018--a4267128-1f1b-429a-afb9-b94140f86425
+2018-11-25 20:50:14,174 [1] INFO  RegnskabsHenter.Program Slettet temp-filer og afslutter
+2018-11-25 20:52:12,820 [1] INFO  RegnskabsHenter.Program Regnskabsindlæsning startet.
+2018-11-25 20:52:12,833 [1] INFO  RegnskabsHenter.Program Config indlæst.
+2018-11-25 20:52:13,023 [1] INFO  RegnskabsHenter.Program Config indlæst.
+2018-11-25 20:52:13,025 [1] INFO  RegnskabsHenter.Program Dannet temp-katalog: C:\Users\yazpa\OneDrive\Dokumenter\dotnet_projects\regnskab-ds\Regnskabskoersel-25-11-2018--5250da22-9b29-4381-bc77-b3d2aaba4f99
+2018-11-25 20:52:14,162 [1] INFO  RegnskabsHenter.Program Indlæst fra ES: 62, for datoer: 24-11-2018 00:00:00/25-11-2018 00:00:00
+2018-11-25 20:52:15,334 [1] INFO  RegnskabsHenter.Program 33591144/X18-DQ-66-LQ-33591144 har ingen xbrl-fil tilknyttet
+2018-11-25 20:52:17,006 [1] INFO  RegnskabsHenter.Program 32781985/X18-DQ-66-UX-32781985 har ingen xbrl-fil tilknyttet
+2018-11-25 20:52:17,081 [1] INFO  RegnskabsHenter.Program 33592604/X18-DQ-66-LV-33592604 har ingen xbrl-fil tilknyttet
+2018-11-25 20:52:19,819 [1] INFO  RegnskabsHenter.Program 33592639/X18-DQ-66-KN-33592639 har ingen xbrl-fil tilknyttet
+2018-11-25 20:52:27,187 [1] INFO  RegnskabsHenter.Program Har indlæst 62 regnskaber
+2018-11-25 20:52:27,192 [1] INFO  RegnskabsHenter.Program Zipper: C:\Users\yazpa\OneDrive\Dokumenter\dotnet_projects\regnskab-ds\Regnskabskoersel-25-11-2018--5250da22-9b29-4381-bc77-b3d2aaba4f99
+2018-11-25 20:52:27,330 [1] INFO  RegnskabsHenter.Program Flytter til: \\localhost\c$\temp\
+2018-11-25 20:52:27,368 [1] INFO  RegnskabsHenter.Program Slettet temp-filer og afslutter
+2018-11-25 20:58:07,919 [1] INFO  RegnskabsHenter.Program Regnskabsindlæsning startet.
+2018-11-25 20:58:08,126 [1] INFO  RegnskabsHenter.Program Config indlæst.
+2018-11-25 20:58:08,128 [1] INFO  RegnskabsHenter.Program Dannet temp-katalog: C:\Users\yazpa\OneDrive\Dokumenter\dotnet_projects\regnskab-ds\Regnskabskoersel-25-11-2018--34761265-0a8a-40a9-9705-03dcbe3cb5ed
+2018-11-25 20:58:09,295 [1] INFO  RegnskabsHenter.Program Modtaget fra ES: 62 dokumenter, for datoer: 24-11-2018 00:00:00/25-11-2018 00:00:00
+2018-11-25 20:58:10,460 [1] INFO  RegnskabsHenter.Program 33591144/X18-DQ-66-LQ-33591144 har ingen xbrl-fil tilknyttet
+2018-11-25 20:58:11,857 [1] INFO  RegnskabsHenter.Program 32781985/X18-DQ-66-UX-32781985 har ingen xbrl-fil tilknyttet
+2018-11-25 20:58:11,949 [1] INFO  RegnskabsHenter.Program 33592604/X18-DQ-66-LV-33592604 har ingen xbrl-fil tilknyttet
+2018-11-25 20:58:14,765 [1] INFO  RegnskabsHenter.Program 33592639/X18-DQ-66-KN-33592639 har ingen xbrl-fil tilknyttet

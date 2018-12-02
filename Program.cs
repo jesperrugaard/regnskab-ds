@@ -8,34 +8,39 @@ using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CsvHelper;
-
+using log4net;
+using System.Reflection;
+using log4net.Config;
 
 namespace RegnskabsHenter
 {
     class Program
     {
+        private static readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static HttpClient client = null;
         static void Main(string[] args)
         {
+            var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            XmlConfigurator.Configure(logRepository, new FileInfo("app.config"));
+            _log.Info("Regnskabsindlæsning startet.");
             RegnskabConfig config = new RegnskabConfig();
-
+           
             if (!config.InitializeProgram(args))
             {
                 return;
             };
-
-            Console.WriteLine("Starter Hent Regnskaber ...");
-
+            _log.Info("Config indlæst.");
             Guid g = Guid.NewGuid();
-            var koerselskatalog = Directory.CreateDirectory(config.TempDirectory + "/" + config.RunName + DateTime.Now.ToShortDateString() + "-" + g);
+            var koerselskatalog = Directory.CreateDirectory(config.TempDirectory + "/" + config.RunName +"-"+ DateTime.Now.ToShortDateString() + "--" + g);
+            _log.Info("Dannet temp-katalog: " + koerselskatalog.FullName);
             HttpClientHandler handler = new HttpClientHandler()
             {
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             };
             client = new HttpClient(handler);
             client.BaseAddress = config.RegnskabsUri;
-            //Handle lines
-            StreamWriter writer = File.CreateText(path: koerselskatalog.FullName + "/koersel.csv");
+           
+            StreamWriter writer = File.CreateText(path: koerselskatalog.FullName + "/index.csv");
             using (var csv = new CsvWriter(writer))
             {
 
@@ -48,12 +53,18 @@ namespace RegnskabsHenter
                     startFrom += config.PageSize;
                     lines = FetchAndTreatDocuments(startFrom, config, koerselskatalog);
                     csv.WriteRecords(lines);
-
                 }
+                startFrom += lines.Count;
+                _log.Info("Har indlæst " + startFrom + " regnskaber");
             }
-            //WriteCSVFile();
+            _log.Info("Zipper: " + koerselskatalog.FullName );
             ZipFile.CreateFromDirectory(koerselskatalog.FullName, koerselskatalog.FullName + ".zip");
-            File.Move(koerselskatalog.FullName + ".zip", config.TargetDirectory);
+             _log.Info("Flytter til: " + config.TargetDirectory );
+            File.Copy(koerselskatalog.FullName + ".zip", config.TargetDirectory + koerselskatalog.Name + ".zip");
+            File.SetAttributes(koerselskatalog.FullName, FileAttributes.Normal);
+            Directory.Delete(koerselskatalog.FullName, true);
+            File.Delete(koerselskatalog.Name + ".zip");         
+            _log.Info("Slettet temp-filer og afslutter");
         }
 
         public static List<InfoLine> FetchAndTreatDocuments(int startFrom, RegnskabConfig config, DirectoryInfo koerselskatalog)
@@ -61,6 +72,7 @@ namespace RegnskabsHenter
             List<InfoLine> list = new List<InfoLine>();
 
             var docs = HentFraES(startFrom, config.PageSize, config.ErstDistUri, config.StartDato, config.SlutDato);
+            _log.Info("Modtaget fra ES: " + docs.Count+ " dokumenter, for datoer: " + config.StartDato  +"/"+ config.SlutDato );
             foreach (var virksomhed in docs)
             {
                 InfoLine line = new InfoLine();
@@ -80,12 +92,17 @@ namespace RegnskabsHenter
                     }
                     else if (regnskab.dokumentMimeType.ToLower().Contains("application/xml"))
                     {
-                        String filename = sagskatalog.FullName + "\" + regnskab.dokumentType + regnskab.dokumentUrl.Substring(regnskab.dokumentUrl.LastIndexOf("."));
-                        var t = GetFileAsync(regnskab, uniktnavn, sagskatalog);
+                        string shortname =  regnskab.dokumentType + regnskab.dokumentUrl.Substring(regnskab.dokumentUrl.LastIndexOf(".")); 
+                        String filename = sagskatalog.FullName + "\\" + shortname;
+                        var t = GetFileAsync(regnskab, filename, sagskatalog);
                         t.Wait();
-                        line.XbrlDokument = filename;
+                        line.XbrlDokument = "\\"+ uniktnavn + "\\" + shortname;
                     }
                     Console.WriteLine(regnskab.dokumentUrl);
+                }
+                if(String.IsNullOrEmpty(line.XbrlDokument))
+                {
+                    _log.Info(line.CVRNUMMER + "/" + uniktnavn+  " har ingen xbrl-fil tilknyttet");
                 }
                 list.Add(line);
 
@@ -133,8 +150,9 @@ namespace RegnskabsHenter
             }
             else
             {
+                _log.Error("Kunne ikke hente fil: " + filename);
                 //Log this as an error
-                throw new FileNotFoundException();
+                throw new FileNotFoundException(response.ReasonPhrase);
             }
             return;
         }
