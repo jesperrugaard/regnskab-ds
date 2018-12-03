@@ -94,6 +94,8 @@ namespace RegnskabsHenter
 
             } 
             catch(Exception e) {
+                System.Console.WriteLine("Application cannot start. Please configuration values");
+            
                 System.Console.WriteLine(e);
                 WriteUsage();
                 return false;
@@ -103,10 +105,9 @@ namespace RegnskabsHenter
 
         public void WriteUsage()
         {
-            System.Console.WriteLine("Application cannot start. Please configuration values");
             foreach (var confValue in confValues)
             {
-                System.Console.WriteLine(confValue.Key + " = " + confValue.Value);
+                System.Console.WriteLine(confValue.Key + "=" + confValue.Value);
             }
         }
 

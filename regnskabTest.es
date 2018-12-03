@@ -5,9 +5,9 @@ GET /offentliggoerelser/_search
             "must": [
                 {
                     "range": {
-                        "indlaesningsTidspunkt": {
-                            "gte": "2018-11-29T00:00:00.000Z",
-                            "lte": "2018-12-02T00:00:00.000Z"
+                        "offentliggoerelsesTidspunkt": {
+                            "gte": "2017-11-29T00:00:00.000Z",
+                            "lte": "2017-12-02T00:00:00.000Z"
                         }
                     }
                 }

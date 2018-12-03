@@ -24,32 +24,29 @@ namespace RegnskabsHenter
         static void Main(string[] args)
         {
             DateTime start = DateTime.Now;
-            System.Console.WriteLine("Kørsel starter "+ start.ToShortTimeString());
+            System.Console.WriteLine("Kørsel starter " + start.ToShortTimeString());
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-            XmlConfigurator.Configure(logRepository, new FileInfo("app.config"));
+            XmlConfigurator.Configure(logRepository, new FileInfo("log.config"));
 
-            RunSimpleExtraction(args);
-            DateTime slut = DateTime.Now;
-            _log.Info("### Kørsel varede " + slut.Subtract(start).TotalSeconds + " sekunder ###");
-            System.Console.WriteLine("Kørsel slutter "+ slut.ToShortTimeString() + " ialt: " + slut.Subtract(start).TotalSeconds + " sekunder" );
-
-            
-        }
-
-        private static void RunSimpleExtraction(string[] args)
-        {
-           
-            _log.Info("### Regnskabsindlæsning startet.###");
+            _log.Info("### Regnskabsindlæsning startet. ###");
             RegnskabConfig config = new RegnskabConfig();
 
             if (!config.InitializeProgram(args))
             {
                 return;
             };
-            _log.Info("Config indlæst.");
-            Guid g = Guid.NewGuid();
-            var koerselskatalog = Directory.CreateDirectory(config.TempDirectory + "/" + DateTime.Now.ToShortDateString() + "-" + config.RunName + "-" + g);
-            _log.Info("Dannet temp-katalog: " + koerselskatalog.Name    );
+            config.WriteUsage();
+
+            RunSimpleExtraction(config);
+            DateTime slut = DateTime.Now;
+            _log.Info("### Kørsel varede " + slut.Subtract(start).TotalSeconds + " sekunder ###");
+            System.Console.WriteLine("Kørsel slutter " + slut.ToShortTimeString() + " ialt: " + slut.Subtract(start).TotalSeconds + " sekunder");
+
+
+        }
+
+        private static void RunSimpleExtraction(RegnskabConfig config)
+        {
             HttpClientHandler handler = new HttpClientHandler()
             {
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
@@ -61,37 +58,52 @@ namespace RegnskabsHenter
                 .DefaultTypeName("_doc");
 
             es_client = new ElasticClient(con_settings);
-            StreamWriter writer = File.CreateText(path: koerselskatalog.FullName + "/index.csv");
-            using (var csv = new CsvWriter(writer))
+            Guid koerselsId = Guid.NewGuid();
+
+            DateTime startDay = config.StartDato;
+            DateTime endDay = config.SlutDato;
+
+            while (endDay.Subtract(startDay).TotalDays > 0)
             {
-                List<InfoLine> lines = FetchAndTreatDocuments("", config, koerselskatalog);
-                csv.WriteRecords(lines);
+                System.Console.WriteLine(string.Format("Dag: {0}", startDay.ToShortDateString()));  
+                var koerselskatalog = Directory.CreateDirectory(config.TempDirectory + "/" + startDay.ToShortDateString() + "-" + config.RunName + "-" + koerselsId);
+                _log.Info("Dannet temp-katalog: " + koerselskatalog.Name);
+                StreamWriter writer = File.CreateText(path: koerselskatalog.FullName + "/index.csv");
+                using (var csv = new CsvWriter(writer))
+                {
+                    config.StartDato = startDay;
+                    config.SlutDato  = startDay.AddDays(1);
+                    List<InfoLine> lines = FetchAndTreatDocuments(config, koerselskatalog);
+                    csv.WriteRecords(lines);
+                }
+
+                _log.Info("Zipper: " + koerselskatalog.FullName);
+                ZipFile.CreateFromDirectory(koerselskatalog.FullName, koerselskatalog.FullName + ".zip");
+                _log.Info("Flytter til: " + config.TargetDirectory);
+                File.Copy(koerselskatalog.FullName + ".zip", config.TargetDirectory + koerselskatalog.Name + ".zip");
+                File.SetAttributes(koerselskatalog.FullName, FileAttributes.Normal);
+                Directory.Delete(koerselskatalog.FullName, true);
+                File.Delete(koerselskatalog.FullName + ".zip");
+                _log.Info(string.Format("### Slettet temp-filer og afslutter for {0} ###",startDay.ToShortDateString()));
+
+                startDay = startDay.AddDays(1);
             }
 
-            _log.Info("Zipper: " + koerselskatalog.FullName);
-            ZipFile.CreateFromDirectory(koerselskatalog.FullName, koerselskatalog.FullName + ".zip");
-            _log.Info("Flytter til: " + config.TargetDirectory);
-            File.Copy(koerselskatalog.FullName + ".zip", config.TargetDirectory + koerselskatalog.Name + ".zip");
-            File.SetAttributes(koerselskatalog.FullName, FileAttributes.Normal);
-            Directory.Delete(koerselskatalog.FullName, true);
-            File.Delete(koerselskatalog.FullName + ".zip");
-            _log.Info("### Slettet temp-filer og afslutter ###");
-            
         }
 
 
-        public static List<InfoLine> FetchAndTreatDocuments(string scrollId, RegnskabConfig config, DirectoryInfo koerselskatalog)
+        public static List<InfoLine> FetchAndTreatDocuments(RegnskabConfig config, DirectoryInfo koerselskatalog)
         {
             List<Indberetning> docs = GetAllDocumentsInIndex(config.StartDato, config.SlutDato);
             _log.Info("Modtaget fra ES: " + docs.Count + " dokumenter, for datoer: " + config.StartDato + "/" + config.SlutDato);
             List<InfoLine> resultList = new List<InfoLine>();
-           
+
             for (int i = 0; i < docs.Count; i += config.Chunks)
             {
                 int chunk = i + config.Chunks <= docs.Count ? config.Chunks : docs.Count % config.Chunks;
                 _log.Info("Downloader næste " + chunk + "/" + i);
                 IEnumerable<Task<InfoLine>> downloadTasks =
-                from virksomhed in docs.GetRange(i, chunk) select FetchDocument(virksomhed, koerselskatalog) ;
+                from virksomhed in docs.GetRange(i, chunk) select FetchDocument(virksomhed, koerselskatalog);
 
                 Task<InfoLine>[] downloads = downloadTasks.ToArray();
 
@@ -140,14 +152,14 @@ namespace RegnskabsHenter
             //when it expires, elastic will delete the entire scroll.
             var initialResponse = es_client.Search<Indberetning>
                 (scr => scr
-                 .Scroll("3m")
+                 .Scroll("2m")
                  .From(0)
                  .Take(scrollSize)
                  .Query(q => q
                      .Bool(b => b
                          .Must(m => m
                              .DateRange(dr => dr
-                                  .Field(f => f.indlaesningsTidspunkt)
+                                  .Field(f => f.offentliggoerelsesTidspunkt)
                                   .GreaterThanOrEquals(from)
                                   .LessThanOrEquals(to)
                          )
