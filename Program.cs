@@ -27,6 +27,7 @@ namespace RegnskabsHenter
             System.Console.WriteLine("Kørsel starter "+ start.ToShortTimeString());
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(logRepository, new FileInfo("app.config"));
+
             RunSimpleExtraction(args);
             DateTime slut = DateTime.Now;
             _log.Info("### Kørsel varede " + slut.Subtract(start).TotalSeconds + " sekunder ###");
@@ -73,7 +74,7 @@ namespace RegnskabsHenter
             File.Copy(koerselskatalog.FullName + ".zip", config.TargetDirectory + koerselskatalog.Name + ".zip");
             File.SetAttributes(koerselskatalog.FullName, FileAttributes.Normal);
             Directory.Delete(koerselskatalog.FullName, true);
-            File.Delete(koerselskatalog.Name + ".zip");
+            File.Delete(koerselskatalog.FullName + ".zip");
             _log.Info("### Slettet temp-filer og afslutter ###");
             
         }
