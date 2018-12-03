@@ -5,6 +5,12 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+<ItemGroup>
+  <None Update="log4net.config">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </None>
+</ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="9.2.3" />
     <PackageReference Include="Elasticsearch.net" Version="6.4.0" />

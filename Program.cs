@@ -26,7 +26,7 @@ namespace RegnskabsHenter
             DateTime start = DateTime.Now;
             System.Console.WriteLine("Kørsel starter " + start.ToShortTimeString());
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
-            XmlConfigurator.Configure(logRepository, new FileInfo("log.config"));
+            XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
 
             _log.Info("### Regnskabsindlæsning startet. ###");
             RegnskabConfig config = new RegnskabConfig();
