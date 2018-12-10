@@ -21,11 +21,15 @@ namespace RegnskabsHenter
         private static HttpClient client = null;
         private static ElasticClient es_client;
 
+        public static bool dontStop { get; private set; }
+
         static void Main(string[] args)
         {
             DateTime start = DateTime.Now;
+            dontStop = true;
             System.Console.WriteLine("Kørsel starter " + start.ToShortTimeString());
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            System.Console.WriteLine(Assembly.GetEntryAssembly().Location);
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
 
             _log.Info("### Regnskabsindlæsning startet. ###");
@@ -63,10 +67,10 @@ namespace RegnskabsHenter
             DateTime startDay = config.StartDato;
             DateTime endDay = config.SlutDato;
 
-            while (endDay.Subtract(startDay).TotalDays > 0)
+            while (endDay.Subtract(startDay).TotalDays > 0 && dontStop)
             {
-                System.Console.WriteLine(string.Format("Dag: {0}", startDay.ToShortDateString()));  
-                var koerselskatalog = Directory.CreateDirectory(config.TempDirectory + "/" + startDay.ToShortDateString() + "-" + config.RunName + "-" + koerselsId);
+                System.Console.WriteLine(string.Format("Dag: {0}", startDay.ToString("yyyy-MM-dd")));  
+                var koerselskatalog = Directory.CreateDirectory(config.TempDirectory + "/" + startDay.ToString("yyyy-MM-dd") + "-" + config.RunName + "-" + koerselsId);
                 _log.Info("Dannet temp-katalog: " + koerselskatalog.Name);
                 StreamWriter writer = File.CreateText(path: koerselskatalog.FullName + "/index.csv");
                 using (var csv = new CsvWriter(writer))
@@ -94,9 +98,17 @@ namespace RegnskabsHenter
 
         public static List<InfoLine> FetchAndTreatDocuments(RegnskabConfig config, DirectoryInfo koerselskatalog)
         {
-            List<Indberetning> docs = GetAllDocumentsInIndex(config.StartDato, config.SlutDato);
-            _log.Info("Modtaget fra ES: " + docs.Count + " dokumenter, for datoer: " + config.StartDato + "/" + config.SlutDato);
+            List<Indberetning> docs = GetAllDocumentsInIndex(config.StartDato, config.SlutDato, config.UseIndexDate);
             List<InfoLine> resultList = new List<InfoLine>();
+
+            _log.Info("Modtaget fra ES: " + docs.Count + " dokumenter, for datoer: " + config.StartDato + "/" + config.SlutDato);
+            if(config.UseMax && docs.Count > config.Max) {
+                dontStop = false;
+                System.Console.WriteLine("For mange dokumenter modtaget, stopper kørsel, sæt use_max=false for at køre alligevel");
+                _log.Info("For mange dokumenter modtaget, stopper kørsel, sæt use_max=false for at køre alligevel");
+                return resultList;
+            }
+            
 
             for (int i = 0; i < docs.Count; i += config.Chunks)
             {
@@ -146,25 +158,11 @@ namespace RegnskabsHenter
         }
 
 
-        protected static List<Indberetning> GetAllDocumentsInIndex(DateTime from, DateTime to, string scrollTimeout = "2m", int scrollSize = 2000)
+        protected static List<Indberetning> GetAllDocumentsInIndex(DateTime from, DateTime to, bool index, string scrollTimeout = "2m", int scrollSize = 2000)
         {
             //The thing to know about scrollTimeout is that it resets after each call to the scroll so it only needs to be big enough to stay alive between calls.
             //when it expires, elastic will delete the entire scroll.
-            var initialResponse = es_client.Search<Indberetning>
-                (scr => scr
-                 .Scroll("2m")
-                 .From(0)
-                 .Take(scrollSize)
-                 .Query(q => q
-                     .Bool(b => b
-                         .Must(m => m
-                             .DateRange(dr => dr
-                                  .Field(f => f.offentliggoerelsesTidspunkt)
-                                  .GreaterThanOrEquals(from)
-                                  .LessThanOrEquals(to)
-                         )
-                     )
-                 )));
+            var initialResponse = (index) ? UseIndex(from, to, scrollTimeout, scrollSize): UsePublic(from, to, scrollTimeout, scrollSize);
             List<Indberetning> results = new List<Indberetning>();
             if (!initialResponse.IsValid || string.IsNullOrEmpty(initialResponse.ScrollId))
                 throw new Exception(initialResponse.ServerError.Error.Reason);
@@ -185,6 +183,44 @@ namespace RegnskabsHenter
             //This would be garbage collected on it's own after scrollTimeout expired from it's last call but we'll clean up our room when we're done per best practice.
             es_client.ClearScroll(new ClearScrollRequest(scrollid));
             return results;
+        }
+
+        private static ISearchResponse<Indberetning> UsePublic(DateTime from, DateTime to, string scrollTimeout, int scrollSize)
+        {
+            return es_client.Search<Indberetning>
+                (scr => scr
+                 .Scroll("2m")
+                 .From(0)
+                 .Take(scrollSize)
+                 .Query(q => q
+                     .Bool(b => b
+                         .Must(m => m
+                             .DateRange(dr => dr
+                                  .Field(f => f.offentliggoerelsesTidspunkt)
+                                  .GreaterThanOrEquals(from)
+                                  .LessThanOrEquals(to)
+                         )
+                     )
+                 )));
+        }
+
+        private static ISearchResponse<Indberetning> UseIndex(DateTime from, DateTime to, string scrollTimeout, int scrollSize)
+        {
+            return es_client.Search<Indberetning>
+                (scr => scr
+                 .Scroll("2m")
+                 .From(0)
+                 .Take(scrollSize)
+                 .Query(q => q
+                     .Bool(b => b
+                         .Must(m => m
+                             .DateRange(dr => dr
+                                  .Field(f => f.indlaesningsTidspunkt)
+                                  .GreaterThanOrEquals(from)
+                                  .LessThanOrEquals(to)
+                         )
+                     )
+                 )));
         }
 
         public static async Task GetFileAsync(Dokumenter regnskab, string filename, DirectoryInfo sagskatalog)

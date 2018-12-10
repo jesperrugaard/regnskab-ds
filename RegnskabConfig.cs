@@ -18,6 +18,9 @@ namespace RegnskabsHenter
         public DateTime SlutDato { get;set; }
         public int Threads { get; set; }
         public int Chunks { get;set; }
+        public int Max { get; private set; }
+        public bool UseMax { get; private set; }
+        public bool UseIndexDate { get; private set; }
         public int PageSize { get;set; }
         public bool UseYesterDay { get;set; }
 
@@ -32,7 +35,10 @@ namespace RegnskabsHenter
             { "base_uri","http://distribution.virk.dk" },
             { "start_date","01-01-2018" },
             { "end_date","02-01-2018" },
-            { "use_yesterday", "true"}
+            { "use_yesterday", "true"},
+            { "use_max", "true"},
+            { "max", "50000"},
+            { "use_index_date", "true"}
         };
 
         public bool InitializeProgram(string[] args)
@@ -74,7 +80,9 @@ namespace RegnskabsHenter
             PageSize = int.Parse(confValues["page_size"]);
             UseYesterDay = bool.Parse(confValues["use_yesterday"]);
             Chunks = int.Parse(confValues["chunks"]);
-
+            Max = int.Parse(confValues["max"]);
+            UseMax = bool.Parse(confValues["use_max"]);
+            UseIndexDate = bool.Parse(confValues["use_index_date"]);
 
             if(UseYesterDay)
             {

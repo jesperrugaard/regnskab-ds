@@ -1,4 +1,4 @@
-
+        
 GET /offentliggoerelser/_search 
 {    "query": {
         "bool": {
