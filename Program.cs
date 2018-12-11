@@ -70,7 +70,7 @@ namespace RegnskabsHenter
             while (endDay.Subtract(startDay).TotalDays > 0 && dontStop)
             {
                 System.Console.WriteLine(string.Format("Dag: {0}", startDay.ToString("yyyy-MM-dd")));  
-                var koerselskatalog = Directory.CreateDirectory(config.TempDirectory + "/" + startDay.ToString("yyyy-MM-dd") + "-" + config.RunName + "-" + koerselsId);
+                var koerselskatalog = Directory.CreateDirectory(config.TempDirectory + "/" + startDay.ToString("yyyy-MM-dd") + "-" + config.RunName + "-" + config.TypeName + "-"+ koerselsId);
                 _log.Info("Dannet temp-katalog: " + koerselskatalog.Name);
                 StreamWriter writer = File.CreateText(path: koerselskatalog.FullName + "/index.csv");
                 using (var csv = new CsvWriter(writer))
@@ -109,7 +109,6 @@ namespace RegnskabsHenter
                 return resultList;
             }
             
-
             for (int i = 0; i < docs.Count; i += config.Chunks)
             {
                 int chunk = i + config.Chunks <= docs.Count ? config.Chunks : docs.Count % config.Chunks;

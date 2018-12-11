@@ -14,6 +14,7 @@ namespace RegnskabsHenter
         public string TempDirectory { get { return confValues["temp_directory"]; } }
         public string TargetDirectory { get { return confValues["target_directory"]; } }
         public string RunName { get { return confValues["name_of_run"]; } }
+        public string TypeName { get { return UseIndexDate ? "Indlaest" : "Offentliggjort"; } }
         public DateTime StartDato { get;set; }
         public DateTime SlutDato { get;set; }
         public int Threads { get; set; }
