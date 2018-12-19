@@ -26,7 +26,7 @@ namespace RegnskabsHenter
         static void Main(string[] args)
         {
             DateTime start = DateTime.Now;
-            dontStop = true;
+           
             System.Console.WriteLine("Kørsel starter " + start.ToShortTimeString());
             var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             System.Console.WriteLine(Assembly.GetEntryAssembly().Location);
@@ -66,10 +66,10 @@ namespace RegnskabsHenter
 
             DateTime startDay = config.StartDato;
             DateTime endDay = config.SlutDato;
-
+            dontStop = true;
             while (endDay.Subtract(startDay).TotalDays > 0 && dontStop)
             {
-                System.Console.WriteLine(string.Format("Dag: {0}", startDay.ToString("yyyy-MM-dd")));  
+                System.Console.Write(string.Format("Dag: {0} ", startDay.ToString("yyyy-MM-dd")));  
                 var koerselskatalog = Directory.CreateDirectory(config.TempDirectory + "/" + startDay.ToString("yyyy-MM-dd") + "-" + config.RunName + "-" + config.TypeName + "-"+ koerselsId);
                 _log.Info("Dannet temp-katalog: " + koerselskatalog.Name);
                 StreamWriter writer = File.CreateText(path: koerselskatalog.FullName + "/index.csv");
@@ -78,6 +78,7 @@ namespace RegnskabsHenter
                     config.StartDato = startDay;
                     config.SlutDato  = startDay.AddDays(1);
                     List<InfoLine> lines = FetchAndTreatDocuments(config, koerselskatalog);
+                    System.Console.WriteLine(string.Format("Modtaget: {0} regnskaber", lines.Count));  
                     csv.WriteRecords(lines);
                 }
 
@@ -132,6 +133,7 @@ namespace RegnskabsHenter
             line.PeriodeStart = virksomhed.regnskab.regnskabsperiode.startDato;
             line.PeriodeSlut = virksomhed.regnskab.regnskabsperiode.slutDato;
             line.UID = virksomhed.indlaesningsId;
+            line.Indlaesningstidspunkt = virksomhed.indlaesningsTidspunkt.ToString("yyyy/MM/dd:hh:mm:ss");
 
             string uniktnavn = virksomhed.sagsNummer + "-" + virksomhed.cvrNummer;
             foreach (var regnskab in virksomhed.dokumenter)
@@ -200,7 +202,11 @@ namespace RegnskabsHenter
                                   .LessThanOrEquals(to)
                          )
                      )
-                 )));
+                 )).Sort(s => s
+                    .Ascending(ss=> ss.cvrNummer)
+                    .Ascending(ss => ss.offentliggoerelsesTidspunkt)
+                    )
+                 );
         }
 
         private static ISearchResponse<Indberetning> UseIndex(DateTime from, DateTime to, string scrollTimeout, int scrollSize)
@@ -219,7 +225,10 @@ namespace RegnskabsHenter
                                   .LessThanOrEquals(to)
                          )
                      )
-                 )));
+                 )).Sort(s => s
+                    .Ascending(ss=> ss.cvrNummer)
+                    .Ascending(ss => ss.indlaesningsTidspunkt)
+                    ));
         }
 
         public static async Task GetFileAsync(Dokumenter regnskab, string filename, DirectoryInfo sagskatalog)

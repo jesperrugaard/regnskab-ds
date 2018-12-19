@@ -12,6 +12,8 @@ periodeStart=h.Source.Regnskab.Regnskabsperiode.StartDato
 periodeSlut=h.Source.Regnskab.Regnskabsperiode.SlutDato
 xbrlDokument=navnet på xbrldokumentet i zip-filen
 pdfDokument=permanent link til det tilhørende regnskab i PDF-format
+indlaesningstidspunkt er tidspunktet for indlæsning i indeks
+
 */
    public class InfoLine
    {
@@ -25,6 +27,8 @@ pdfDokument=permanent link til det tilhørende regnskab i PDF-format
     public string PeriodeSlut {get;set;}
     public string XbrlDokument {get;set;}
     public string PDFDokument {get;set;}
+
+    public string Indlaesningstidspunkt {get; set;}
     
    } 
 }
