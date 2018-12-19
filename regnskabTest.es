@@ -6,8 +6,8 @@ GET /offentliggoerelser/_search
                 {
                     "range": {
                         "offentliggoerelsesTidspunkt": {
-                            "gte": "2017-11-29T00:00:00.000Z",
-                            "lte": "2017-12-02T00:00:00.000Z"
+                            "gte": "2015-06-03T00:00:00.000Z",
+                            "lte": "2015-06-04T00:00:00.000Z"
                         }
                     }
                 }

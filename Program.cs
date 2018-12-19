@@ -144,11 +144,14 @@ namespace RegnskabsHenter
                 }
                 else if (regnskab.dokumentMimeType.ToLower().Contains("application/xml"))
                 {
-                    string shortname = uniktnavn + "-" + regnskab.dokumentType + regnskab.dokumentUrl.Substring(regnskab.dokumentUrl.LastIndexOf("."));
-                    String filename = koerselskatalog.FullName + "/" + shortname;
-                    await GetFileAsync(regnskab, filename, koerselskatalog);
+                    
+                    string shortname = uniktnavn + "-" + regnskab.dokumentType + Guid.NewGuid().ToString() + regnskab.dokumentUrl.Substring(regnskab.dokumentUrl.LastIndexOf("."));
+                    
+                    string filename = koerselskatalog.FullName + "/" + shortname;
+                    await GetFileAsync(regnskab.dokumentUrl, regnskab.dokumentMimeType, filename, koerselskatalog);
                     line.XbrlDokument = "\\" + shortname;
-                }
+                    
+                                  }
 
             }
             if (String.IsNullOrEmpty(line.XbrlDokument))
@@ -231,11 +234,11 @@ namespace RegnskabsHenter
                     ));
         }
 
-        public static async Task GetFileAsync(Dokumenter regnskab, string filename, DirectoryInfo sagskatalog)
+        public static async Task GetFileAsync(string url, string mimetype, string filename, DirectoryInfo sagskatalog)
         {
             client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(regnskab.dokumentMimeType));
-            HttpResponseMessage response = await client.GetAsync(regnskab.dokumentUrl);
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue(mimetype));
+            HttpResponseMessage response = await client.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
