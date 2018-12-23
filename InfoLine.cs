@@ -28,7 +28,7 @@ indlaesningstidspunkt er tidspunktet for indlæsning i indeks
     public string XbrlDokument {get;set;}
     public string PDFDokument {get;set;}
 
-    public string Indlaesningstidspunkt {get; set;}
+    public string Tidspunkt {get; set;}
     
    } 
 }

@@ -1,4 +1,10 @@
 # regnskab-ds
+23-12-2018 Ny version
+Fjernet cvr i sortering, således at der kun sorteres efter tid
+Tilføjet hundrededele sekund til cvr for tidspunkt
+
+20-12-2018 Ny version
+Alle xml-filer navngives med unikt uuid, da der ellers er risiko for kollision.
 
 19-12-2018 Ny version: 
 - Lægger indlæsningstidspunkt med i csv-fil

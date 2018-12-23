@@ -133,7 +133,7 @@ namespace RegnskabsHenter
             line.PeriodeStart = virksomhed.regnskab.regnskabsperiode.startDato;
             line.PeriodeSlut = virksomhed.regnskab.regnskabsperiode.slutDato;
             line.UID = virksomhed.indlaesningsId;
-            line.Indlaesningstidspunkt = virksomhed.indlaesningsTidspunkt.ToString("yyyy/MM/dd:hh:mm:ss");
+            line.Tidspunkt = virksomhed.indlaesningsTidspunkt.ToString("yyyy/MM/dd:hh:mm:ss:fff");
 
             string uniktnavn = virksomhed.sagsNummer + "-" + virksomhed.cvrNummer;
             foreach (var regnskab in virksomhed.dokumenter)
@@ -206,7 +206,6 @@ namespace RegnskabsHenter
                          )
                      )
                  )).Sort(s => s
-                    .Ascending(ss=> ss.cvrNummer)
                     .Ascending(ss => ss.offentliggoerelsesTidspunkt)
                     )
                  );
@@ -229,8 +228,7 @@ namespace RegnskabsHenter
                          )
                      )
                  )).Sort(s => s
-                    .Ascending(ss=> ss.cvrNummer)
-                    .Ascending(ss => ss.indlaesningsTidspunkt)
+                   .Ascending(ss => ss.indlaesningsTidspunkt)
                     ));
         }
 
