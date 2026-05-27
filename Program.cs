@@ -73,7 +73,7 @@ namespace RegnskabsHenter
                 var koerselskatalog = Directory.CreateDirectory(config.TempDirectory + "/" + startDay.ToString("yyyy-MM-dd") + "-" + config.RunName + "-" + config.TypeName + "-"+ koerselsId);
                 _log.Info("Dannet temp-katalog: " + koerselskatalog.Name);
                 StreamWriter writer = File.CreateText(path: koerselskatalog.FullName + "/index.csv");
-                using (var csv = new CsvWriter(writer, , CultureInfo.InvariantCulture))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
                 {
                     config.StartDato = startDay;
                     config.SlutDato  = startDay.AddDays(1);
